@@ -1,0 +1,15 @@
+# CMake 构建输出
+build/
+*.exe
+*.o
+*.a
+*.so
+
+# IDE
+.vscode/
+
+# 其他
+*.swp
+*.swo
+*~
+.DS_Store
