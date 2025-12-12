@@ -13,8 +13,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # 库目录
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-# GLAD 源文件
-set(GLAD_SOURCE ${CMAKE_SOURCE_DIR}/include/glad/glad.c)
+# 编译 GLAD 为静态库（只编译一次）
+add_library(glad STATIC ${CMAKE_SOURCE_DIR}/include/glad/glad.c)
+target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 # 自动检测源文件目录中的所有 .cpp 文件
 file(GLOB CPP_FILES "${CMAKE_SOURCE_DIR}/*.cpp")
@@ -23,11 +24,12 @@ file(GLOB CPP_FILES "${CMAKE_SOURCE_DIR}/*.cpp")
 foreach(CPP_FILE ${CPP_FILES})
     get_filename_component(EXECUTABLE_NAME ${CPP_FILE} NAME_WE)
     
-    # 创建可执行文件
-    add_executable(${EXECUTABLE_NAME} ${CPP_FILE} ${GLAD_SOURCE})
+    # 创建可执行文件（不再包含 glad.c）
+    add_executable(${EXECUTABLE_NAME} ${CPP_FILE})
     
-    # 链接库
+    # 链接 GLAD 库和其他库
     target_link_libraries(${EXECUTABLE_NAME}
+        glad
         ${CMAKE_SOURCE_DIR}/lib/glfw3dll.lib
         opengl32
         gdi32
@@ -51,6 +53,7 @@ foreach(CPP_FILE ${CPP_FILES})
            NOT FILE MATCHES "^build/" AND
            NOT FILE MATCHES "^include/" AND
            NOT FILE MATCHES "^util/" AND
+           NOT FILE MATCHES "^lib/" AND
            NOT FILE MATCHES "^\\.gitignore$" AND
            NOT FILE MATCHES "\\.md$")
             
@@ -70,6 +73,7 @@ foreach(CPP_FILE ${CPP_FILES})
         endif()
     endforeach()
 endforeach()
+
 
 
 
